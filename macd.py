@@ -1,18 +1,23 @@
 import numpy as np
 from datetime import datetime
 
+
 def macd(close, fast_ema_time=12, slow_ema_time=26, signal_time=9, smoothing_factor=2, step_seconds=60, evenSize=True):
-    #https://www.investopedia.com/terms/e/ema.asp
+    # https://www.investopedia.com/terms/e/ema.asp
 
     # als ema times in days
     # smoothingfactor for days, if steps are not 1d factor will be automaticly ajusted (reference is step_seconds)
 
-    smoothing_factor = smoothing_factor * (step_seconds / (60*60*24))
+    # check if enough values are given
+    if len(close) <= slow_ema_time + signal_time:
+        return None
 
+    smoothing_factor *= (step_seconds / 86400)
 
     fast_ema_factor = smoothing_factor / (fast_ema_time + 1)
     slow_ema_factor = smoothing_factor / (slow_ema_time + 1)
     signal_factor = smoothing_factor / (signal_time + 1)
+
     fast_ema = []
     fast_ema.append(np.average(close[:fast_ema_time]))
     for i in close[fast_ema_time:]:

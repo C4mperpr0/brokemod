@@ -6,14 +6,14 @@ import numpy as np
 from pyarrow.feather import read_feather, write_feather
 import tasklib
 
-data = read_feather('./fdatasets/btcusd.feather')
+data = read_feather('./fdatasets/adausd.feather')
+print(len(data))
 
 time = data['timestamp'][-250000:]#[::1440]
 close = data['close'][-250000:]
 #close = tasklib.change_steps(close)
-print(len(close))
 time = time[-len(close):]
-print(len(time))
+
 
 r = macd(close, smoothing_factor=2, step_seconds=60, evenSize=True)
 macd = np.array(r['macd'])

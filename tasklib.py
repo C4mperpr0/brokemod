@@ -35,4 +35,10 @@ def change_steps(data, chunksize=1440):
     return new_data
 
 
-change_steps(data=list(range(55)), chunksize=10)
+def convert_all(from_dir='./datasets/', to_dir='./fdatasets/'):
+    for i in range(len(os.listdir(from_dir))):
+        filename = os.listdir(from_dir)[i]
+        data = csv_to_df(os.path.join(from_dir, filename))
+        write_feather(data, os.path.join(to_dir, filename.split('.')[0]+'.feather'))
+        print(f'{i}/{len(os.listdir(from_dir))} | {round((i/len(os.listdir(from_dir)))*100)}% | Converted \"{filename}\"')
+
