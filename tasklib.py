@@ -1,0 +1,38 @@
+import os
+from datetime import datetime
+import pandas as pd
+from pyarrow.feather import read_feather, write_feather
+import numpy as np
+
+
+def csv_to_df(file):
+    with open(file) as f:
+        timestamps = []
+        data = []
+        line_nr = 0
+        for line in f:
+            if line_nr % 10000 == 0:
+                # print(f'Line number {line_nr}')
+                if line_nr == 0:
+                    line_nr += 1
+                    continue
+            values = line.replace('\n', '').split(',')
+            data.append([datetime.fromtimestamp(int(values[0]) / 1e3), float(values[2])])
+            timestamps.append(datetime.fromtimestamp(int(values[0]) / 1e3))
+            line_nr += 1
+
+    df = pd.DataFrame(data=data,
+                      columns=['timestamp', 'close'],
+                      index=timestamps)
+    return df
+
+
+def change_steps(data, chunksize=1440):
+    new_data = []
+    new_data.append(np.average(data[:(len(data) % chunksize)]))
+    for i in range(len(data) % chunksize, len(data), chunksize):
+        new_data.append(np.average(data[i:i + chunksize]))
+    return new_data
+
+
+change_steps(data=list(range(55)), chunksize=10)
