@@ -39,13 +39,17 @@ class TradeCurrency:
         for indicator_config in self.trade_scheme:
             if self.trade_scheme[indicator_config]['method'] == 'macd':
                 indicator_values = macd(self.values, step_seconds=self.interval,
+                                        progress=r[indicator_config] if indicator_config in r.keys() else None,
                                         evenSize=True,
                                         **self.trade_scheme[indicator_config]['args'])
             r[indicator_config] = indicator_values
 
-        if None in r.values():
-            return None
-        else:
-            eval = self.evaluate(**r)
+        return r
+        # dont forget to remove for evaluation algo.
+
+        #if None in r.values():
+        #    return None
+        #else:
+        #    eval = self.evaluate(**r)
 
 

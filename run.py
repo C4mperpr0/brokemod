@@ -9,22 +9,23 @@ from trade import *
 
 data = read_feather('./fdatasets/btcusd.feather')
 
-time = data['timestamp'][-250000:].reset_index(drop=True)  #[::1440]
-close = data['close'][-250000:].reset_index(drop=True)
+time = data['timestamp'][-2500000:].reset_index(drop=True)  #[::1440]
+close = data['close'][-2500000:].reset_index(drop=True)
 #close = tasklib.change_steps(close)
 #time = time[-len(close):]
 
 def evaluate(macd_standard_config):
     #print(macd_standard_config['histogram'][-1])
-    return None
+    return macd_standard_config
 
 
 tradingObj = TradeCurrency(test_tradescheme(), evaluate, interval_manual=60)
-for i in range(25000):
+for i in range(5000):
     if i % 100 == 0:
         print(i)
     r = tradingObj.trade(time[i], close[i])
 
+print(r)
 macd = np.array(r['macd_standard_config']['macd'])
 signal = np.array(r['macd_standard_config']['signal'])
 histogram = np.array(r['macd_standard_config']['histogram'])
