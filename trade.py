@@ -34,18 +34,13 @@ class TradeCurrency:
         self.values.append(close)
         self.timestamp.append(timestamp)
 
-        r = {}
-
         for indicator_config in self.trade_scheme:
             if self.trade_scheme[indicator_config]['method'] == 'macd':
                 #print(self.trade_scheme[indicator_config])
-                indicator_values = macd(self.values, step_seconds=self.interval,
-                                        progress=self.trade_scheme[indicator_config]['values'] if 'values' in self.trade_scheme[indicator_config].keys() else None,
-                                        even_size=True,
-                                        **self.trade_scheme[indicator_config]['args'])
-            self.trade_scheme[indicator_config]['values'] = indicator_values
+                self.trade_scheme[indicator_config]['values'] = macd(self.values, step_seconds=self.interval,
+                                                                     progress=self.trade_scheme[indicator_config]['values'] if 'values' in self.trade_scheme[indicator_config].keys() else None,
+                                                                     **self.trade_scheme[indicator_config]['args'])
 
-        return r
         # dont forget to remove for evaluation algo.
 
         #if None in r.values():

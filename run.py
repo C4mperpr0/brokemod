@@ -20,21 +20,18 @@ def evaluate(macd_standard_config):
 
 
 tradingObj = TradeCurrency(test_tradescheme(), evaluate, interval_manual=60)
-for i in range(0, 1000000, 1):
-    if i % 250 == 0:
-        start = datetime.now()
-        r = tradingObj.trade(time[i], close[i])
-        end = datetime.now()
-        #print(end-start)
-        continue
-    r = tradingObj.trade(time[i], close[i])
+for i in range(0, 5000, 1):
+    if i % 5000 == 0:
+        print(i)
+    tradingObj.trade(time[i], close[i])
 
-print(r)
-macd = np.array(r['macd_standard_config']['macd'])
-signal = np.array(r['macd_standard_config']['signal'])
-histogram = np.array(r['macd_standard_config']['histogram'])
+print(tradingObj.trade_scheme['macd_standard_config']['values'].keys())
+d = tradingObj.trade_scheme['macd_standard_config']['values']
+macd = np.array(d['macd'])
 time = time[:len(macd)]
 close = close[:len(macd)]
+signal = np.array(d['signal'])
+histogram = np.array(d['histogram'])
 
 fig, ax = plt.subplots(2)
 ax[0].plot(time, close)

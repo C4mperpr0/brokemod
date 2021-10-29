@@ -2,8 +2,7 @@ import numpy as np
 from datetime import datetime
 
 
-def macd(close, fast_ema_time=12, slow_ema_time=26, signal_time=9, smoothing_factor=2, step_seconds=60, progress=None,
-         even_size=True):
+def macd(close, fast_ema_time=12, slow_ema_time=26, signal_time=9, smoothing_factor=2, step_seconds=60, progress=None):
     # https://www.investopedia.com/terms/e/ema.asp
 
     # als ema times in days
@@ -29,35 +28,26 @@ def macd(close, fast_ema_time=12, slow_ema_time=26, signal_time=9, smoothing_fac
     for i in close[slow_ema_time + len(slow_ema):]:
         slow_ema.append((i - slow_ema[-1]) * slow_ema_factor + slow_ema[-1])
 
-    macd = []# if progress is None else progress['macd']
+    macd = [] if progress is None else progress['macd']
     for i in range(len(macd), len(slow_ema)):
         macd.append(fast_ema[i + (slow_ema_time - fast_ema_time)] - slow_ema[i])
-    print(f"{len(close)} {len(macd)}")
 
     signal = [] if progress is None else progress['signal']
     signal.append(np.average(macd[:signal_time]))
     for i in range(signal_time + len(signal), len(macd)):
         signal.append((i - signal[-1]) * signal_factor + signal[-1])
 
-    # histogram = [] if progress is None else progress['histogram']
-    histogram = []
-    for i in range(len(signal)):
-        try:
-            y = macd[i + signal_time]
-        except:
-            print("macd")
-        try:
-            x = signal[i]
-        except:
-            print("signal")
+    histogram = [] if progress is None else progress['histogram']
+    for i in range(len(histogram), len(signal)):
         histogram.append(macd[i + signal_time - 1] - signal[i])
 
-    if even_size:
-        for i in range((len(close) - len(macd))):
-            macd.insert(0, macd[0])
-        for i in range((len(close) - len(signal))):
-            signal.insert(0, signal[0])
-        for i in range((len(close) - len(histogram))):
-            histogram.insert(0, histogram[0])
 
-    return {'fast_ema': fast_ema, 'slow_ema': slow_ema, 'macd': macd, 'signal': signal, 'histogram': histogram}
+    # if even_size:
+    #     for i in range((len(close) - len(macd))):
+    #         macd.insert(0, macd[0])
+    #     for i in range((len(close) - len(signal))):
+    #         signal.insert(0, signal[0])
+    #     for i in range((len(close) - len(histogram))):
+    #         histogram.insert(0, histogram[0])
+
+    return {'fast_ema': fast_ema, 'slow_ema': slow_ema, 'macd': macd, 'signal': signal, 'histogram': histogram,}
