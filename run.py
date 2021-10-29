@@ -20,13 +20,13 @@ def evaluate(macd_standard_config):
 
 
 tradingObj = TradeCurrency(test_tradescheme(), evaluate, interval_manual=60)
-for i in range(0, 5000, 1):
-    if i % 5000 == 0:
+for i in range(0, 10000, 1):
+    if i % 1000 == 0:
         print(i)
     tradingObj.trade(time[i], close[i])
 
-print(tradingObj.trade_scheme['macd_standard_config']['values'].keys())
 d = tradingObj.trade_scheme['macd_standard_config']['values']
+d = tasklib.even_size(d)
 macd = np.array(d['macd'])
 time = time[:len(macd)]
 close = close[:len(macd)]

@@ -42,3 +42,9 @@ def convert_all(from_dir='./datasets/', to_dir='./fdatasets/'):
         write_feather(data, os.path.join(to_dir, filename.split('.')[0]+'.feather'))
         print(f'{i}/{len(os.listdir(from_dir))} | {round((i/len(os.listdir(from_dir)))*100)}% | Converted \"{filename}\"')
 
+def even_size(json_arrays, standard=0):
+    size = max([len(d) for d in json_arrays.values()])
+    for l in json_arrays:
+        while len(json_arrays[l]) < size:
+            json_arrays[l].insert(0, standard)
+    return json_arrays
