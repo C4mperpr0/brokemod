@@ -20,8 +20,8 @@ def evaluate(macd_standard_config):
 
 
 tradingObj = TradeCurrency(test_tradescheme(), evaluate, interval_manual=60)
-for i in range(0, 10000, 1):
-    if i % 1000 == 0:
+for i in range(0, 200000, 1):
+    if i % 5000 == 0:
         print(i)
     tradingObj.trade(time[i], close[i])
 
