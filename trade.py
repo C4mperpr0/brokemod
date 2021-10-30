@@ -10,12 +10,13 @@ def test_tradescheme():
 # trades values: index timestamp action(sell/buy) amount amount_usd total_amount total_amount_usd
 
 class TradeCurrency:
-    def __init__(self, trade_scheme, evaluate, timestamp=[], values=[], trades=[], interval_manual=None, interval_warn=False):
+    def __init__(self, trade_scheme, evaluate, timestamp=[], values=[], volume=100, interval_manual=None, interval_warn=False):
         self.interval_warn = interval_warn
         self.trade_scheme = trade_scheme
         self.evaluate = evaluate
         self.timestamp = timestamp
         self.values = values
+        self.volume = volume
 
         # check interval
         if interval_manual is None:
@@ -41,11 +42,63 @@ class TradeCurrency:
                                                                      progress=self.trade_scheme[indicator_config]['values'] if 'values' in self.trade_scheme[indicator_config].keys() else None,
                                                                      **self.trade_scheme[indicator_config]['args'])
 
-        # dont forget to remove for evaluation algo.
+        # example evaluation method
+        # works only for trading scheme with "macd_standard_config" (type macd)
+        if self.trade_scheme[indicator_config]['values'] is None:
+            return
 
-        #if None in r.values():
-        #    return None
-        #else:
-        #    eval = self.evaluate(**r)
+        if 'trades' not in self.trade_scheme['macd_standard_config']:
+            self.trade_scheme['macd_standard_config']['trades'] = []
+        if 'trade_status' not in self.trade_scheme['macd_standard_config']:
+            self.trade_scheme['macd_standard_config']['trade_status'] = {'volume_crypto': 0, 'volume_usd': 0}
+
+        impulse = 'sell' if self.trade_scheme[indicator_config]['values']['histogram'][-1] <= 0 else 'buy'
+        if impulse == 'sell' and self.trade_scheme['macd_standard_config']['trade_status']['volume_crypto'] == 0:
+            impulse = 'keep'
+        elif impulse == 'buy' and self.trade_scheme['macd_standard_config']['trade_status']['volume_crypto'] > 0:
+            impulse = 'keep'
+
+        if impulse == 'keep':
+            self.trade_scheme['macd_standard_config']['trades'].append({'timestamp': timestamp,
+                                                                        'value': close,
+                                                                        'volume_crypto': self.trade_scheme['macd_standard_config']['trade_status']['volume_crypto'],
+                                                                        'volume_usd': self.trade_scheme['macd_standard_config']['trade_status']['volume_usd'],
+                                                                        'volume_uninvested': self.volume,
+                                                                        'volume_total': self.volume + self.trade_scheme['macd_standard_config']['trade_status']['volume_usd'],
+                                                                        'impulse': impulse,
+                                                                        'histogram': self.trade_scheme[indicator_config]['values']['histogram'][-1]})
+        elif impulse == 'buy':
+            self.trade_scheme['macd_standard_config']['trade_status'] = {'volume_crypto': self.volume / close,
+                                                                         'volume_usd': self.volume}
+            self.trade_scheme['macd_standard_config']['trades'].append({'timestamp': timestamp,
+                                                                        'value': close,
+                                                                        'volume_crypto': self.volume / close,
+                                                                        'volume_usd': self.volume,
+                                                                        'volume_uninvested': 0,
+                                                                        'volume_total': self.volume,
+                                                                        'impulse': impulse,
+                                                                        'histogram': self.trade_scheme[indicator_config]['values']['histogram'][-1]})
+            self.volume = 0
+        elif impulse == 'sell':
+            self.volume += self.trade_scheme['macd_standard_config']['trade_status']['volume_usd']
+            self.trade_scheme['macd_standard_config']['trade_status'] = {'volume_crypto': 0, 'volume_usd': 0}
+            self.trade_scheme['macd_standard_config']['trades'].append({'timestamp': timestamp,
+                                                                        'value': close,
+                                                                        'volume_crypto': 0,
+                                                                        'volume_usd': 0,
+                                                                        'volume_uninvested': self.volume,
+                                                                        'volume_total': self.volume,
+                                                                        'impulse': impulse,
+                                                                        'histogram': self.trade_scheme[indicator_config]['values']['histogram'][-1]})
+
+        print(self.trade_scheme['macd_standard_config']['trades'][-1])
+        input()
+
+
+
+
+
+
+
 
 
