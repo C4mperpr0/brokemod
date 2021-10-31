@@ -1,6 +1,4 @@
 import numpy as np
-from datetime import datetime
-
 
 def macd(close, fast_ema_time=12, slow_ema_time=26, signal_time=9, smoothing_factor=2, step_seconds=60, progress=None):
     # https://www.investopedia.com/terms/e/ema.asp

@@ -1,6 +1,5 @@
 from macd import macd
 
-
 def test_tradescheme():
     return {'macd_standard_config': {'method': 'macd', 'args': {'fast_ema_time': 12,
                                                                 'slow_ema_time': 26,

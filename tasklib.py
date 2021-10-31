@@ -4,7 +4,6 @@ import pandas as pd
 from pyarrow.feather import read_feather, write_feather
 import numpy as np
 
-
 def csv_to_df(file):
     with open(file) as f:
         timestamps = []
