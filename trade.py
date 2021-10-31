@@ -59,6 +59,8 @@ class TradeCurrency:
             impulse = 'keep'
 
         if impulse == 'keep':
+            self.trade_scheme['macd_standard_config']['trade_status'] = {'volume_crypto': self.trade_scheme['macd_standard_config']['trade_status']['volume_crypto'],
+                                                                         'volume_usd': self.trade_scheme['macd_standard_config']['trade_status']['volume_crypto'] * close}
             self.trade_scheme['macd_standard_config']['trades'].append({'timestamp': timestamp,
                                                                         'value': close,
                                                                         'volume_crypto': self.trade_scheme['macd_standard_config']['trade_status']['volume_crypto'],
@@ -80,7 +82,7 @@ class TradeCurrency:
                                                                         'histogram': self.trade_scheme[indicator_config]['values']['histogram'][-1]})
             self.volume = 0
         elif impulse == 'sell':
-            self.volume += self.trade_scheme['macd_standard_config']['trade_status']['volume_usd']
+            self.volume += self.trade_scheme['macd_standard_config']['trade_status']['volume_crypto'] * close
             self.trade_scheme['macd_standard_config']['trade_status'] = {'volume_crypto': 0, 'volume_usd': 0}
             self.trade_scheme['macd_standard_config']['trades'].append({'timestamp': timestamp,
                                                                         'value': close,
@@ -90,9 +92,6 @@ class TradeCurrency:
                                                                         'volume_total': self.volume,
                                                                         'impulse': impulse,
                                                                         'histogram': self.trade_scheme[indicator_config]['values']['histogram'][-1]})
-
-        print(self.trade_scheme['macd_standard_config']['trades'][-1])
-        input()
 
 
 

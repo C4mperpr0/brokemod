@@ -20,12 +20,13 @@ def evaluate(macd_standard_config):
 
 
 tradingObj = TradeCurrency(test_tradescheme(), evaluate, interval_manual=60)
-for i in range(0, 200000, 1):
-    if i % 5000 == 0:
+for i in range(0, 100000, 1):
+    if i % 10000 == 0:
         print(i)
     tradingObj.trade(time[i], close[i])
 
 d = tradingObj.trade_scheme['macd_standard_config']['values']
+volume_total = [v['volume_total'] for v in tradingObj.trade_scheme['macd_standard_config']['trades']]
 d = tasklib.even_size(d)
 macd = np.array(d['macd'])
 time = time[:len(macd)]
@@ -33,11 +34,16 @@ close = close[:len(macd)]
 signal = np.array(d['signal'])
 histogram = np.array(d['histogram'])
 
-fig, ax = plt.subplots(2)
+while len(volume_total) < len(time):
+    volume_total.insert(0, volume_total[0])
+    
+fig, ax = plt.subplots(3)
 ax[0].plot(time, close)
 #ax[0].set_title('Close')
 ax[1].plot(time, macd)
 ax[1].plot(time, signal)
 ax[1].fill_between(time, 0, histogram, where=(np.where(histogram < 0, True, False)), color='r')
 ax[1].fill_between(time, 0, histogram, where=(np.where(histogram < 0, False, True)), color='g')
+ax[2].plot(time, volume_total)
+plt.gcf().autofmt_xdate()
 plt.show()
