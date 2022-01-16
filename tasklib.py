@@ -35,11 +35,17 @@ def change_steps(data, chunksize=1440):
 
 
 def convert_all(from_dir='./datasets/', to_dir='./fdatasets/'):
-    for i in range(len(os.listdir(from_dir))):
+    errors = 0
+    total_count = len(os.listdir(from_dir))
+    for i in range(total_count):
         filename = os.listdir(from_dir)[i]
-        data = csv_to_df(os.path.join(from_dir, filename))
-        write_feather(data, os.path.join(to_dir, filename.split('.')[0]+'.feather'))
-        print(f'{i}/{len(os.listdir(from_dir))} | {round((i/len(os.listdir(from_dir)))*100)}% | Converted \"{filename}\"')
+        try:
+            data = csv_to_df(os.path.join(from_dir, filename))
+            write_feather(data, os.path.join(to_dir, filename.split('.')[0]+'.feather'))
+        except:
+            error += 1
+            print(f"ERROR: cannot read or write \"{filename.split('.')[0]+'.feather'}\"")
+        print(f'{i}/{total_count} | {round((i/total_count)*100)}% | {errors} failed | Converted \"{filename}\"')
 
 def even_size(json_arrays, standard=0):
     size = max([len(d) for d in json_arrays.values()])
