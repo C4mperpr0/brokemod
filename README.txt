@@ -8,7 +8,7 @@ pandas (in feather inbegriffen)
 
 ### Informationen
 
-MAIN.py mit Python ausführen
+MAIN.py mit Python3 ausführen
 Anweisungen befolgen
 	-> verfügbare Cryptodatenbanken finden sich in ./fdatasets/
 
